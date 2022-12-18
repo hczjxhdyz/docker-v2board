@@ -1,0 +1,4 @@
+*
+!.gitignore
+!certs/v2board/
+!v2board.conf
