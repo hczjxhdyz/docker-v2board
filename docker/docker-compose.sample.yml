@@ -22,6 +22,9 @@ services:
     environment:
       TZ: "$TZ"
     restart: always
+    depends_on:
+      - php80
+      - redis
     networks:
       - default
       # 可以把-default 改成下列配置，以固定容器IP
