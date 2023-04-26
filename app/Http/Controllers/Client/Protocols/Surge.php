@@ -41,7 +41,7 @@ class Surge
                 // [Proxy Group]
                 $proxyGroup .= $item['name'] . ', ';
             }
-            if ($item['type'] === 'v2ray') {
+            if ($item['type'] === 'vmess') {
                 // [Proxy]
                 $proxies .= self::buildVmess($user['uuid'], $item);
                 // [Proxy Group]
@@ -65,13 +65,22 @@ class Surge
 
         // Subscription link
         $subsURL = Helper::getSubscribeUrl("/api/v1/client/subscribe?token={$user['token']}");
-        $subsDomain = $_SERVER['SERVER_NAME'];
+        $subsDomain = $_SERVER['HTTP_HOST'];
         $subsURL = 'https://' . $subsDomain . '/api/v1/client/subscribe?token=' . $user['token'];
 
         $config = str_replace('$subs_link', $subsURL, $config);
         $config = str_replace('$subs_domain', $subsDomain, $config);
         $config = str_replace('$proxies', $proxies, $config);
         $config = str_replace('$proxy_group', rtrim($proxyGroup, ', '), $config);
+
+        $upload = round($user['u'] / (1024*1024*1024), 2);
+        $download = round($user['d'] / (1024*1024*1024), 2);
+        $useTraffic = $upload + $download;
+        $totalTraffic = round($user['transfer_enable'] / (1024*1024*1024), 2);
+        $expireDate = $user['expired_at'] === NULL ? '长期有效' : date('Y-m-d H:i:s', $user['expired_at']);
+        $subscribeInfo = "title={$appName}订阅信息, content=上传流量：{$upload}GB\\n下载流量：{$download}GB\\n剩余流量：{$useTraffic}GB\\n套餐流量：{$totalTraffic}GB\\n到期时间：{$expireDate}";
+        $config = str_replace('$subscribe_info', $subscribeInfo, $config);
+
         return $config;
     }
 
