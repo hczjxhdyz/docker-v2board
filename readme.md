@@ -23,7 +23,7 @@ git clone https://github.com/hczjxhdyz/docker-v2board
 ```
 cd docker-v2board           #进入项目目录
 cd docker                   #进入docker文件夹
-cp env.sample .env && cp docker-compose.sample.yml  #复制配置文件
+cp env.sample .env && cp docker-compose.sample.yml  docker-compose.yml #复制配置文件
 vi .env                     #进入环境变量里面修改你需要更改的配置
 ```
 ### 4 安装composer依赖
