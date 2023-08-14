@@ -57,9 +57,40 @@ class UniProxyController extends Controller
     {
         $data = file_get_contents('php://input');
         $data = json_decode($data, true);
+
+        // 增加单节点多服务器统计在线人数
         $ip = $request->ip();
-        // Cache::tags()/
-        Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), count($data), 3600);
+        // 1、获取节点节点在线人数缓存
+        $time = time();
+        $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id)) ?? [];
+        $onlineCollection = collect($onlineUsers, true);
+
+        // 过滤掉超过3600秒的记录
+        $onlineCollection = $onlineCollection->reject(function ($item) use ($time) {
+            return $item['time'] < ($time - 3600);
+        });
+
+        // 定义数据
+        $updatedItem = [
+            'ip' => $ip,
+            'online_user' => count($data),
+            'time' => $time
+        ];
+        // 查询该服务器是否存在记录
+        $existingItem = $onlineCollection->firstWhere('ip', $ip);
+        if($existingItem){
+            $onlineCollection = $onlineCollection->map(function($item)use($existingItem, $updatedItem){
+                return $item['ip'] == $existingItem['ip']? $updatedItem : $item;
+            });
+        }else{
+            $onlineCollection->push($updatedItem);
+        }
+
+        // 储存每个服务器在线人数和总在线人数
+        $onlineUsers = $onlineCollection->all();
+        $online_user = $onlineCollection->sum('online_user');
+        Cache::put(CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $onlineUsers, 3600);
+        Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $online_user, 3600);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_LAST_PUSH_AT', $this->nodeInfo->id), time(), 3600);
         $userService = new UserService();
         $userService->trafficFetch($this->nodeInfo->toArray(), $this->nodeType, $data);
