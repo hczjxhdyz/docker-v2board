@@ -38,7 +38,9 @@ class Clash
 
         // 增加不支持提示
         array_push($proxy, [ "name" => "您的客户端不支持", "type" => "vmess", "server" => "1.1.1.1", "port" => 80, "uuid" => "3", "alterId" => 0, "cipher" => "auto", "udp" => false, "tls" => false]);
-        array_push($proxy, [ "name" => "请使用clash Meta", "type" => "vmess", "server" => "1.1.1.1", "port" => 80, "uuid" => "3", "alterId" => 0, "cipher" => "auto", "udp" => false, "tls" => false]);
+        array_push($proxies, "您的客户端不支持");
+        array_push($proxy, [ "name" => "请使用clash Meta内核的客户端", "type" => "vmess", "server" => "1.1.1.1", "port" => 80, "uuid" => "3", "alterId" => 0, "cipher" => "auto", "udp" => false, "tls" => false]);
+        array_push($proxies, "请使用clash Meta内核的客户端");
         foreach ($servers as $item) {
 
             if ($item['type'] === 'shadowsocks'

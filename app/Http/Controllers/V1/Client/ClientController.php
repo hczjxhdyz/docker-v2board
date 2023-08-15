@@ -8,6 +8,7 @@ use App\Services\ServerService;
 use App\Services\UserService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ClientController extends Controller
 {
@@ -27,7 +28,15 @@ class ClientController extends Controller
                 foreach (array_reverse(glob(app_path('Protocols') . '/*.php')) as $file) {
                     $file = 'App\\Protocols\\' . basename($file, '.php');
                     $class = new $file($user, $servers);
-                    if (strpos($flag, $class->flag) !== false) {
+                    $classFlags = explode(',', $class->flag);
+                    $isMatch = function() use ($classFlags, $flag){
+                        foreach ($classFlags as $classFlag){
+                            if(strpos($flag, $classFlag) !== false) return true;
+                        }
+                        return false;
+                    };
+                    // 判断是否匹配
+                    if ($isMatch()) {
                         die($class->handle());
                     }
                 }
