@@ -20,14 +20,14 @@ class CommController extends Controller
     private function isEmailVerify()
     {
         return response([
-            'data' => (int)config('v2board.email_verify', 0) ? 1 : 0
+            'data' => (int)Setting('email_verify', 0) ? 1 : 0
         ]);
     }
 
     public function sendEmailVerify(CommSendEmailVerify $request)
     {
-        if ((int)config('v2board.recaptcha_enable', 0)) {
-            $recaptcha = new ReCaptcha(config('v2board.recaptcha_key'));
+        if ((int)Setting('recaptcha_enable', 0)) {
+            $recaptcha = new ReCaptcha(Setting('recaptcha_key'));
             $recaptchaResp = $recaptcha->verify($request->input('recaptcha_data'));
             if (!$recaptchaResp->isSuccess()) {
                 abort(500, __('Invalid code is incorrect'));
@@ -38,16 +38,16 @@ class CommController extends Controller
             abort(500, __('Email verification code has been sent, please request again later'));
         }
         $code = rand(100000, 999999);
-        $subject = config('v2board.app_name', 'V2Board') . __('Email verification code');
+        $subject = Setting('app_name', 'V2Board') . __('Email verification code');
 
         SendEmailJob::dispatch([
             'email' => $email,
             'subject' => $subject,
             'template_name' => 'verify',
             'template_value' => [
-                'name' => config('v2board.app_name', 'V2Board'),
+                'name' => Setting('app_name', 'V2Board'),
                 'code' => $code,
-                'url' => config('v2board.app_url')
+                'url' => Setting('app_url')
             ]
         ]);
 
@@ -73,7 +73,7 @@ class CommController extends Controller
 
     private function getEmailSuffix()
     {
-        $suffix = config('v2board.email_whitelist_suffix', Dict::EMAIL_WHITELIST_SUFFIX_DEFAULT);
+        $suffix = Setting('email_whitelist_suffix', Dict::EMAIL_WHITELIST_SUFFIX_DEFAULT);
         if (!is_array($suffix)) {
             return preg_split('/,/', $suffix);
         }

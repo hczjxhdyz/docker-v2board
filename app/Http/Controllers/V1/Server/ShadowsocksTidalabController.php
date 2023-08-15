@@ -22,7 +22,7 @@ class ShadowsocksTidalabController extends Controller
         if (empty($token)) {
             abort(500, 'token is null');
         }
-        if ($token !== config('v2board.server_token')) {
+        if ($token !== Setting('server_token')) {
             abort(500, 'token is error');
         }
     }

@@ -47,7 +47,7 @@ class CheckCommission extends Command
 
     public function autoCheck()
     {
-        if ((int)config('v2board.commission_auto_check_enable', 1)) {
+        if ((int)Setting('commission_auto_check_enable', 1)) {
             Order::where('commission_status', 0)
                 ->where('invite_user_id', '!=', NULL)
                 ->where('status', 3)
@@ -81,11 +81,11 @@ class CheckCommission extends Command
     public function payHandle($inviteUserId, Order $order)
     {
         $level = 3;
-        if ((int)config('v2board.commission_distribution_enable', 0)) {
+        if ((int)Setting('commission_distribution_enable', 0)) {
             $commissionShareLevels = [
-                0 => (int)config('v2board.commission_distribution_l1'),
-                1 => (int)config('v2board.commission_distribution_l2'),
-                2 => (int)config('v2board.commission_distribution_l3')
+                0 => (int)Setting('commission_distribution_l1'),
+                1 => (int)Setting('commission_distribution_l2'),
+                2 => (int)Setting('commission_distribution_l3')
             ];
         } else {
             $commissionShareLevels = [
@@ -98,7 +98,7 @@ class CheckCommission extends Command
             if (!isset($commissionShareLevels[$l])) continue;
             $commissionBalance = $order->commission_balance * ($commissionShareLevels[$l] / 100);
             if (!$commissionBalance) continue;
-            if ((int)config('v2board.withdraw_close_enable', 0)) {
+            if ((int)Setting('withdraw_close_enable', 0)) {
                 $inviter->balance = $inviter->balance + $commissionBalance;
             } else {
                 $inviter->commission_balance = $inviter->commission_balance + $commissionBalance;

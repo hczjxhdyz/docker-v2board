@@ -141,7 +141,7 @@ class TicketController extends Controller
 
     public function withdraw(TicketWithdraw $request)
     {
-        if ((int)config('v2board.withdraw_close_enable', 0)) {
+        if ((int)Setting('withdraw_close_enable', 0)) {
             abort(500, 'user.ticket.withdraw.not_support_withdraw');
         }
         if (!in_array(
@@ -154,7 +154,7 @@ class TicketController extends Controller
             abort(500, __('Unsupported withdrawal method'));
         }
         $user = User::find($request->user['id']);
-        $limit = config('v2board.commission_withdraw_limit', 100);
+        $limit = Setting('commission_withdraw_limit', 100);
         if ($limit > ($user->commission_balance / 100)) {
             abort(500, __('The current required minimum withdrawal commission is :limit', ['limit' => $limit]));
         }

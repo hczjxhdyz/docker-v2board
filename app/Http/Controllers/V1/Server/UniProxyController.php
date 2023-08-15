@@ -23,7 +23,7 @@ class UniProxyController extends Controller
         if (empty($token)) {
             abort(500, 'token is null');
         }
-        if ($token !== config('v2board.server_token')) {
+        if ($token !== Setting('server_token')) {
             abort(500, 'token is error');
         }
         $this->nodeType = $request->input('node_type');
@@ -156,8 +156,8 @@ class UniProxyController extends Controller
                 break;
         }
         $response['base_config'] = [
-            'push_interval' => (int)config('v2board.server_push_interval', 60),
-            'pull_interval' => (int)config('v2board.server_pull_interval', 60)
+            'push_interval' => (int)Setting('server_push_interval', 60),
+            'pull_interval' => (int)Setting('server_pull_interval', 60)
         ];
         if ($this->nodeInfo['route_id']) {
             $response['routes'] = $this->serverService->getRoutes($this->nodeInfo['route_id']);

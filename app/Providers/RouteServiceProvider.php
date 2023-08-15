@@ -24,7 +24,7 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-        if (config('v2board.force_https')) {
+        if (Setting('force_https')) {
             resolve(\Illuminate\Routing\UrlGenerator::class)->forceScheme('https');
         }
 

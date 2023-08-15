@@ -25,7 +25,7 @@ class DeepbworkController extends Controller
         if (empty($token)) {
             abort(500, 'token is null');
         }
-        if ($token !== config('v2board.server_token')) {
+        if ($token !== Setting('server_token')) {
             abort(500, 'token is error');
         }
     }
@@ -116,7 +116,7 @@ class DeepbworkController extends Controller
             abort(500, '节点不存在');
         }
         $json = json_decode(self::V2RAY_CONFIG);
-        $json->log->loglevel = (int)config('v2board.server_log_enable') ? 'debug' : 'none';
+        $json->log->loglevel = (int)Setting('server_log_enable') ? 'debug' : 'none';
         $json->inbounds[1]->port = (int)$localPort;
         $json->inbounds[0]->port = (int)$server->server_port;
         $json->inbounds[0]->streamSettings->network = $server->network;
@@ -172,8 +172,8 @@ class DeepbworkController extends Controller
 
     private function setRule(ServerVmess $server, object $json)
     {
-        $domainRules = array_filter(explode(PHP_EOL, config('v2board.server_v2ray_domain')));
-        $protocolRules = array_filter(explode(PHP_EOL, config('v2board.server_v2ray_protocol')));
+        $domainRules = array_filter(explode(PHP_EOL, Setting('server_v2ray_domain')));
+        $protocolRules = array_filter(explode(PHP_EOL, Setting('server_v2ray_protocol')));
         if ($server->ruleSettings) {
             $ruleSettings = $server->ruleSettings;
             // domain

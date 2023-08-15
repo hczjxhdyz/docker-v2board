@@ -11,7 +11,7 @@ class TelegramService {
 
     public function __construct($token = '')
     {
-        $this->api = 'https://api.telegram.org/bot' . config('v2board.telegram_bot_token', $token) . '/';
+        $this->api = 'https://api.telegram.org/bot' . Setting('telegram_bot_token', $token) . '/';
     }
 
     public function sendMessage(int $chatId, string $text, string $parseMode = '')
@@ -69,7 +69,7 @@ class TelegramService {
 
     public function sendMessageWithAdmin($message, $isStaff = false)
     {
-        if (!config('v2board.telegram_bot_enable', 0)) return;
+        if (!Setting('telegram_bot_enable', 0)) return;
         $users = User::where(function ($query) use ($isStaff) {
             $query->where('is_admin', 1);
             if ($isStaff) {

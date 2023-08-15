@@ -67,11 +67,11 @@ class TicketService {
             Cache::put($cacheKey, 1, 1800);
             SendEmailJob::dispatch([
                 'email' => $user->email,
-                'subject' => '您在' . config('v2board.app_name', 'V2Board') . '的工单得到了回复',
+                'subject' => '您在' . Setting('app_name', 'V2Board') . '的工单得到了回复',
                 'template_name' => 'notify',
                 'template_value' => [
-                    'name' => config('v2board.app_name', 'V2Board'),
-                    'url' => config('v2board.app_url'),
+                    'name' => Setting('app_name', 'V2Board'),
+                    'url' => Setting('app_url'),
                     'content' => "主题：{$ticket->subject}\r\n回复内容：{$ticketMessage->message}"
                 ]
             ]);

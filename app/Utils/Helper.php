@@ -110,7 +110,7 @@ class Helper
 
     public static function getSubscribeUrl($path)
     {
-        $subscribeUrls = explode(',', config('v2board.subscribe_url'));
+        $subscribeUrls = explode(',', Setting('subscribe_url'));
         $subscribeUrl = $subscribeUrls[rand(0, count($subscribeUrls) - 1)];
         if ($subscribeUrl) return $subscribeUrl . $path;
         return url($path);

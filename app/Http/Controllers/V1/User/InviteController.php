@@ -14,7 +14,7 @@ class InviteController extends Controller
 {
     public function save(Request $request)
     {
-        if (InviteCode::where('user_id', $request->user['id'])->where('status', 0)->count() >= config('v2board.invite_gen_limit', 5)) {
+        if (InviteCode::where('user_id', $request->user['id'])->where('status', 0)->count() >= Setting('invite_gen_limit', 5)) {
             abort(500, __('The maximum number of creations has been reached'));
         }
         $inviteCode = new InviteCode();
@@ -53,7 +53,7 @@ class InviteController extends Controller
         $codes = InviteCode::where('user_id', $request->user['id'])
             ->where('status', 0)
             ->get();
-        $commission_rate = config('v2board.invite_commission', 10);
+        $commission_rate = Setting('invite_commission', 10);
         $user = User::find($request->user['id']);
         if ($user->commission_rate) {
             $commission_rate = $user->commission_rate;
@@ -62,8 +62,8 @@ class InviteController extends Controller
             ->where('commission_status', 0)
             ->where('invite_user_id', $request->user['id'])
             ->sum('commission_balance');
-        if (config('v2board.commission_distribution_enable', 0)) {
-            $uncheck_commission_balance = $uncheck_commission_balance * (config('v2board.commission_distribution_l1') / 100);
+        if (Setting('commission_distribution_enable', 0)) {
+            $uncheck_commission_balance = $uncheck_commission_balance * (Setting('commission_distribution_l1') / 100);
         }
         $stat = [
             //已注册用户数

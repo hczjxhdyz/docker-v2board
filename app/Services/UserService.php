@@ -60,7 +60,7 @@ class UserService
         if ($user->plan->reset_traffic_method === 2) return null;
         switch (true) {
             case ($user->plan->reset_traffic_method === NULL): {
-                $resetTrafficMethod = config('v2board.reset_traffic_method', 0);
+                $resetTrafficMethod = Setting('reset_traffic_method', 0);
                 switch ((int)$resetTrafficMethod) {
                     // month first day
                     case 0:

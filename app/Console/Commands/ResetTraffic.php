@@ -55,7 +55,7 @@ class ResetTraffic extends Command
             $planIds = explode(',', $resetMethod['plan_ids']);
             switch (true) {
                 case ($resetMethod['method'] === NULL): {
-                    $resetTrafficMethod = config('v2board.reset_traffic_method', 0);
+                    $resetTrafficMethod = Setting('reset_traffic_method', 0);
                     $builder = with(clone($this->builder))->whereIn('plan_id', $planIds);
                     switch ((int)$resetTrafficMethod) {
                         // month first day

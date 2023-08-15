@@ -21,7 +21,7 @@ class ClashMeta
     {
         $servers = $this->servers;
         $user = $this->user;
-        $appName = config('v2board.app_name', 'V2Board');
+        $appName = Setting('app_name', 'V2Board');
         header("subscription-userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
         header('profile-update-interval: 24');
         header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName));
@@ -87,7 +87,7 @@ class ClashMeta
         }
 
         $yaml = Yaml::dump($config, 2, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
-        $yaml = str_replace('$app_name', config('v2board.app_name', 'V2Board'), $yaml);
+        $yaml = str_replace('$app_name', Setting('app_name', 'V2Board'), $yaml);
         return $yaml;
     }
 

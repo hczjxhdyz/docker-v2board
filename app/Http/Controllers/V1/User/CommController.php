@@ -13,17 +13,17 @@ class CommController extends Controller
     {
         return response([
             'data' => [
-                'is_telegram' => (int)config('v2board.telegram_bot_enable', 0),
-                'telegram_discuss_link' => config('v2board.telegram_discuss_link'),
-                'stripe_pk' => config('v2board.stripe_pk_live'),
-                'withdraw_methods' => config('v2board.commission_withdraw_method', Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT),
-                'withdraw_close' => (int)config('v2board.withdraw_close_enable', 0),
-                'currency' => config('v2board.currency', 'CNY'),
-                'currency_symbol' => config('v2board.currency_symbol', '¥'),
-                'commission_distribution_enable' => (int)config('v2board.commission_distribution_enable', 0),
-                'commission_distribution_l1' => config('v2board.commission_distribution_l1'),
-                'commission_distribution_l2' => config('v2board.commission_distribution_l2'),
-                'commission_distribution_l3' => config('v2board.commission_distribution_l3')
+                'is_telegram' => (int)Setting('telegram_bot_enable', 0),
+                'telegram_discuss_link' => Setting('telegram_discuss_link'),
+                'stripe_pk' => Setting('stripe_pk_live'),
+                'withdraw_methods' => Setting('commission_withdraw_method', Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT),
+                'withdraw_close' => (int)Setting('withdraw_close_enable', 0),
+                'currency' => Setting('currency', 'CNY'),
+                'currency_symbol' => Setting('currency_symbol', '¥'),
+                'commission_distribution_enable' => (int)Setting('commission_distribution_enable', 0),
+                'commission_distribution_l1' => Setting('commission_distribution_l1'),
+                'commission_distribution_l2' => Setting('commission_distribution_l2'),
+                'commission_distribution_l3' => Setting('commission_distribution_l3')
             ]
         ]);
     }

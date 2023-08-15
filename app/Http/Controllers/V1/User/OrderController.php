@@ -56,7 +56,7 @@ class OrderController extends Controller
             abort(500, __('Order does not exist or has been paid'));
         }
         $order['plan'] = Plan::find($order->plan_id);
-        $order['try_out_plan_id'] = (int)config('v2board.try_out_plan_id');
+        $order['try_out_plan_id'] = (int)Setting('try_out_plan_id');
         if (!$order['plan']) {
             abort(500, __('Subscription plan does not exist'));
         }

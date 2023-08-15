@@ -36,19 +36,19 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        if (config('v2board.email_host')) {
-            Config::set('mail.host', config('v2board.email_host', env('mail.host')));
-            Config::set('mail.port', config('v2board.email_port', env('mail.port')));
-            Config::set('mail.encryption', config('v2board.email_encryption', env('mail.encryption')));
-            Config::set('mail.username', config('v2board.email_username', env('mail.username')));
-            Config::set('mail.password', config('v2board.email_password', env('mail.password')));
-            Config::set('mail.from.address', config('v2board.email_from_address', env('mail.from.address')));
-            Config::set('mail.from.name', config('v2board.app_name', 'V2Board'));
+        if (Setting('email_host')) {
+            Config::set('mail.host', Setting('email_host', env('mail.host')));
+            Config::set('mail.port', Setting('email_port', env('mail.port')));
+            Config::set('mail.encryption', Setting('email_encryption', env('mail.encryption')));
+            Config::set('mail.username', Setting('email_username', env('mail.username')));
+            Config::set('mail.password', Setting('email_password', env('mail.password')));
+            Config::set('mail.from.address', Setting('email_from_address', env('mail.from.address')));
+            Config::set('mail.from.name', Setting('app_name', 'V2Board'));
         }
         $params = $this->params;
         $email = $params['email'];
         $subject = $params['subject'];
-        $params['template_name'] = 'mail.' . config('v2board.email_template', 'default') . '.' . $params['template_name'];
+        $params['template_name'] = 'mail.' . Setting('email_template', 'default') . '.' . $params['template_name'];
         try {
             Mail::send(
                 $params['template_name'],

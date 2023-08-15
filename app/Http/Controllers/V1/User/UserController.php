@@ -227,8 +227,8 @@ class UserController extends Controller
         $key = CacheKey::get('TEMP_TOKEN', $code);
         Cache::put($key, $user->id, 60);
         $redirect = '/#/login?verify=' . $code . '&redirect=' . ($request->input('redirect') ? $request->input('redirect') : 'dashboard');
-        if (config('v2board.app_url')) {
-            $url = config('v2board.app_url') . $redirect;
+        if (Setting('app_url')) {
+            $url = Setting('app_url') . $redirect;
         } else {
             $url = url($redirect);
         }
