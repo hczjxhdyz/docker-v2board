@@ -239,7 +239,7 @@ class Shadowrocket
             "protocol" => 'udp',
             "peer" => $server['server_name']
         ]);
-        $uri = "hysteria://{$server['host']}:{$server['port']}?{$query}#【Hy】{$server['name']}";
+        $uri = "hysteria://{$server['host']}:{$server['port']}?{$query}#[Hy]{$server['name']}";
         $uri .= "\r\n";
         return $uri;
     }

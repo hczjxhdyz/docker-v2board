@@ -97,6 +97,7 @@ class ServerService
             $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_HYSTERIA_LAST_CHECK_AT', $v['id']));
             if (!in_array($user->group_id, $v['group_id'])) continue;
             if (strpos($v['port'], '-') !== false) {
+                $servers[$key]['ports'] = $v['port'];
                 $servers[$key]['port'] = Helper::randomPort($v['port']);
             }
             if (isset($servers[$v['parent_id']])) {

@@ -24,7 +24,8 @@ class ManageController extends Controller
                 'shadowsocks',
                 'vmess',
                 'trojan',
-                'hysteria'
+                'hysteria',
+                'vless'
             ) ?? [];
         DB::beginTransaction();
         foreach ($params as $k => $v) {

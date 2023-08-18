@@ -60,11 +60,12 @@ class UniProxyController extends Controller
 
         // 增加单节点多服务器统计在线人数
         $ip = $request->ip();
-        // 1、获取节点节点在线人数缓存
         $time = time();
-        $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id)) ?? [];
-        $onlineCollection = collect($onlineUsers, true);
+        $cacheKey =  CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id);
 
+        // 1、获取节点节点在线人数缓存
+        $onlineUsers = Cache::get($cacheKey) ?? [];
+        $onlineCollection = collect($onlineUsers, true);
         // 过滤掉超过3600秒的记录
         $onlineCollection = $onlineCollection->reject(function ($item) use ($time) {
             return $item['time'] < ($time - 3600);
@@ -76,20 +77,23 @@ class UniProxyController extends Controller
             'online_user' => count($data),
             'time' => $time
         ];
-        // 查询该服务器是否存在记录
-        $existingItem = $onlineCollection->firstWhere('ip', $ip);
-        if($existingItem){
-            $onlineCollection = $onlineCollection->map(function($item)use($existingItem, $updatedItem){
-                return $item['ip'] == $existingItem['ip']? $updatedItem : $item;
-            });
-        }else{
-            $onlineCollection->push($updatedItem);
-        }
 
-        // 储存每个服务器在线人数和总在线人数
-        $onlineUsers = $onlineCollection->all();
+        $onlineUsersLockKey = 'online_users_lock:' . $cacheKey;
+        // 使用 Redis 的乐观锁机制来更新缓存
+        Cache::lock($onlineUsersLockKey)->get(function () use ($cacheKey, $onlineCollection, $updatedItem) {
+            $existingItemIndex = $onlineCollection->search(function ($item) use ($updatedItem) {
+                return $item['ip'] === $updatedItem['ip'];
+            });
+            if ($existingItemIndex !== false) {
+                $onlineCollection[$existingItemIndex] = $updatedItem;
+            } else {
+                $onlineCollection->push($updatedItem);
+            }
+            $onlineUsers = $onlineCollection->all();
+            Cache::put($cacheKey, $onlineUsers, 3600);
+        });
+
         $online_user = $onlineCollection->sum('online_user');
-        Cache::put(CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $onlineUsers, 3600);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $online_user, 3600);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_LAST_PUSH_AT', $this->nodeInfo->id), time(), 3600);
         $userService = new UserService();

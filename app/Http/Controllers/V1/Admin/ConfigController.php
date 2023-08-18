@@ -192,9 +192,11 @@ class ConfigController extends Controller
                 continue;
             }
             if (array_key_exists($k, $data)) {
+                $value = $data[$k];
+                if (is_array($value)) $value = json_encode($value);
                 Setting::updateOrCreate(
                     ['name' => $k],
-                    ['name' => $k, 'value' => $data[$k]]
+                    ['name' => $k, 'value' => $value]
                 );
                 // $config[$k] = $data[$k];
             }

@@ -54,7 +54,7 @@ class ClashMeta
             }
             if ($item['type'] === 'hysteria') {
                 array_push($proxy, self::buildHysteria($user['uuid'], $item));
-                array_push($proxies, "【Hy】" . $item['name']);
+                array_push($proxies, "[Hy]" . $item['name']);
             }
         }
 
@@ -259,19 +259,21 @@ class ClashMeta
 
     public static function buildHysteria($password, $server)
     {
-        // dd($server);
         $array = [];
-        $array['name'] = "【Hy】" . $server['name'];
+        $array['name'] = "[Hy]" . $server['name'];
         $array['type'] = 'hysteria';
         $array['server'] = $server['host'];
         $array['sni'] = $server['server_name'];
         $array['port'] = $server['port'];
+        // 判断是否开启动态端口
+        if($server['ports']) $array['ports'] = $server['ports'];
         $array['auth_str'] = $password;
         $array['protocol'] = 'udp';
         $array['up'] = $server['up_mbps'];
         $array['down'] = $server['down_mbps'];
         $array['obfs'] = $server['server_key'];
         $array['skip-cert-verify'] = $server['insecure'];
+        $array['fast-open'] = false;
         return $array;
     }
 
