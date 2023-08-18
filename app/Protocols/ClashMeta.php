@@ -266,7 +266,7 @@ class ClashMeta
         $array['sni'] = $server['server_name'];
         $array['port'] = $server['port'];
         // 判断是否开启动态端口
-        if($server['ports']) $array['ports'] = $server['ports'];
+        if(isset($server['ports'])) $array['ports'] = $server['ports'];
         $array['auth_str'] = $password;
         $array['protocol'] = 'udp';
         $array['up'] = $server['up_mbps'];
