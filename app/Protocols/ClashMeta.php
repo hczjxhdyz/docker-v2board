@@ -11,7 +11,7 @@ class ClashMeta
     private $servers;
     private $user;
 
-    public function __construct($user, $servers)
+    public function __construct($user, $servers, array $options = null)
     {
         $this->user = $user;
         $this->servers = $servers;
@@ -263,7 +263,7 @@ class ClashMeta
         $array['name'] = "[Hy]" . $server['name'];
         $array['type'] = 'hysteria';
         $array['server'] = $server['host'];
-        $array['sni'] = $server['server_name'];
+        if($server['server_name']) $array['sni'] = $server['server_name'];
         $array['port'] = $server['port'];
         // 判断是否开启动态端口
         if(isset($server['ports'])) $array['ports'] = $server['ports'];
@@ -272,8 +272,9 @@ class ClashMeta
         $array['up'] = $server['up_mbps'];
         $array['down'] = $server['down_mbps'];
         $array['obfs'] = $server['server_key'];
-        $array['skip-cert-verify'] = $server['insecure'];
-        $array['fast-open'] = false;
+        $array['skip-cert-verify'] = $server['insecure'] ? true : false;
+        $array['fast-open'] = true;
+        $array['disable_mtu_discovery'] = true; //禁止路径最大传输单元发现
         return $array;
     }
 
