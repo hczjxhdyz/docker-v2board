@@ -230,15 +230,18 @@ class Shadowrocket
 
     public static function buildHysteria($password, $server)
     {
-        $query = http_build_query([
+        $params = [
             "auth" => $password,
             "upmbps" => $server['up_mbps'],
             "downmbps" => $server['down_mbps'],
             "obfs"      =>"xplus",
             "obfsParam"  => $server['server_key'],
             "protocol" => 'udp',
-            "peer" => $server['server_name']
-        ]);
+            "peer" => $server['server_name'],
+            "fastopen" => 1
+        ];
+        if($server['insecure']) $params['insecure'] = $server['insecure'];
+        $query = http_build_query($params);
         $uri = "hysteria://{$server['host']}:{$server['port']}?{$query}#[Hy]{$server['name']}";
         $uri .= "\r\n";
         return $uri;

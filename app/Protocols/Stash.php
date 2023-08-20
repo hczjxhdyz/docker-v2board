@@ -51,6 +51,14 @@ class Stash
                 array_push($proxy, self::buildVmess($user['uuid'], $item));
                 array_push($proxies, $item['name']);
             }
+            if ($item['type'] === 'vless') {
+                array_push($proxy, self::buildVless($user['uuid'], $item));
+                array_push($proxies, $item['name']);
+            }
+            if ($item['type'] === 'hysteria') {
+                array_push($proxy, self::buildHysteria($user['uuid'], $item));
+                array_push($proxies, $item['name']);
+            }
             if ($item['type'] === 'trojan') {
                 array_push($proxy, self::buildTrojan($user['uuid'], $item));
                 array_push($proxies, $item['name']);
@@ -157,6 +165,75 @@ class Stash
         return $array;
     }
 
+    public static function buildVless($uuid, $server)
+    {
+        $array = [];
+        $array['name'] = $server['name'];
+        $array['type'] = 'vless';
+        $array['server'] = $server['host'];
+        $array['port'] = $server['port'];
+        $array['uuid'] = $uuid;
+        $array['flow'] = !empty($server['flow']) ? $server['flow']: "";
+        $array['udp'] = true;
+
+        $fingerprints = ['chrome', 'firefox', 'safari', 'ios', 'edge', 'qq']; //随机客户端指纹
+        $array['client-fingerprint'] = $fingerprints[rand(0,count($fingerprints) - 1)];
+
+        if ($server['tls']) {
+            $array['tls'] = true;
+            switch($server['tls']){
+                case 1:
+                    if ($server['tlsSettings']) {
+                        $tlsSettings = $server['tls_settings'];
+                        if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name']))
+                            $array['servername'] = $tlsSettings['server_name'];
+                    }
+                    break;
+                case 2:
+                    if (!isset($server['network_settings'])) break;
+                    $networkSettings = $server['network_settings'];
+                    if (isset($networkSettings['reality-opts'])){
+                        $realitySettings = $networkSettings['reality-opts'];
+                        $array['reality-opts'] = [];
+                        $array['reality-opts']['public-key'] = $realitySettings['public-key'];
+                        $array['reality-opts']['short-id'] = $realitySettings['short-id'];
+                    }
+                    break;
+            }
+
+        }
+
+        if ($server['network'] === 'tcp') {
+            $tcpSettings = $server['network_settings'];
+        }
+
+        if ($server['network'] === 'ws') {
+            $array['network'] = 'ws';
+            if ($server['network_settings']) {
+                $wsSettings = $server['network_settings'];
+                $array['ws-opts'] = [];
+                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                    $array['ws-opts']['path'] = $wsSettings['path'];
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                    $array['ws-opts']['headers'] = ['Host' => $wsSettings['headers']['Host']];
+                if (isset($wsSettings['path']) && !empty($wsSettings['path']))
+                    $array['ws-path'] = $wsSettings['path'];
+                if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
+                    $array['ws-headers'] = ['Host' => $wsSettings['headers']['Host']];
+            }
+        }
+        if ($server['network'] === 'grpc') {
+            $array['network'] = 'grpc';
+            if ($server['network_settings']) {
+                $grpcSettings = $server['network_settings'];
+                $array['grpc-opts'] = [];
+                if (isset($grpcSettings['serviceName'])) $array['grpc-opts']['grpc-service-name'] = $grpcSettings['serviceName'];
+            }
+        }
+
+        return $array;
+    }
+
     public static function buildTrojan($password, $server)
     {
         $array = [];
@@ -168,6 +245,23 @@ class Stash
         $array['udp'] = true;
         if (!empty($server['server_name'])) $array['sni'] = $server['server_name'];
         if (!empty($server['allow_insecure'])) $array['skip-cert-verify'] = ($server['allow_insecure'] ? true : false);
+        return $array;
+    }
+
+    public static function buildHysteria($password, $server)
+    {
+        $array = [];
+        $array['name'] = $server['name'];
+        $array['type'] = 'hysteria';
+        $array['server'] = $server['host'];
+        $array['port'] = $server['port'];
+        $array['up-speed'] = $server['up_mbps'];
+        $array['down-speed'] = $server['down_mbps'];
+        $array['auth-str'] = $password;
+        $array['protocol'] = 'udp';
+        $array['obfs'] = $server['server_key'];
+        $array['sni'] = $server['server_name']??'';
+        $array['skip-cert-verify'] = $server['insecure'];
         return $array;
     }
 
