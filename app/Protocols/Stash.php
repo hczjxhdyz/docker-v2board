@@ -51,10 +51,10 @@ class Stash
                 array_push($proxy, self::buildVmess($user['uuid'], $item));
                 array_push($proxies, $item['name']);
             }
-            if ($item['type'] === 'vless') {
-                array_push($proxy, self::buildVless($user['uuid'], $item));
-                array_push($proxies, $item['name']);
-            }
+            // if ($item['type'] === 'vless') {
+            //     array_push($proxy, self::buildVless($user['uuid'], $item));
+            //     array_push($proxies, $item['name']);
+            // }
             if ($item['type'] === 'hysteria') {
                 array_push($proxy, self::buildHysteria($user['uuid'], $item));
                 array_push($proxies, $item['name']);
