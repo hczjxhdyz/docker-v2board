@@ -15,6 +15,7 @@ class ServerShadowsocks extends Model
         'group_id' => 'array',
         'route_id' => 'array',
         'tags' => 'array',
+        'excludes' => 'array',
         'obfs_settings' => 'array'
     ];
 }

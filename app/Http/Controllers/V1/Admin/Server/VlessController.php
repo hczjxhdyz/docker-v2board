@@ -26,6 +26,7 @@ class VlessController extends Controller
             'network' => 'required',
             'network_settings' => 'nullable|array',
             'tags' => 'nullable|array',
+            'excludes' => 'nullable|array',
             'rate' => 'required',
             'show' => 'nullable|in:0,1',
             'sort' => 'nullable'

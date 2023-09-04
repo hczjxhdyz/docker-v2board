@@ -20,6 +20,7 @@ class HysteriaController extends Controller
             'port' => 'required',
             'server_port' => 'required',
             'tags' => 'nullable|array',
+            'excludes' => 'nullable|array',
             'rate' => 'required|numeric',
             'up_mbps' => 'required|numeric|min:1',
             'down_mbps' => 'required|numeric|min:1',
