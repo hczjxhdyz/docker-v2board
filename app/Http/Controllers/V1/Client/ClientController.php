@@ -17,18 +17,11 @@ class ClientController extends Controller
         $flag = $request->input('flag')
             ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
         $ip = $request->ip();
-
-        // 判断是否有x-forward-ip
-        $xForwardedFor = $request->header('x-forwarded-for');
-        $ipAddresses = explode(',', $xForwardedFor);
-        $realIpAddress = trim($ipAddresses[0]);
-        if (!blank($realIpAddress)) $ip = $realIpAddress;
-
         if ($request->input('ip')) $ip = $request->input('ip');
+
         $flag = strtolower($flag);
         $user = $request->user;
         // account not expired and is not banned.
-
         $userService = new UserService();
         if ($userService->isAvailable($user)) {
             // 获取IP地址信息 如果是国外IP跳过

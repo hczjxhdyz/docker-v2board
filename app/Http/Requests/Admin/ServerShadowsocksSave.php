@@ -27,6 +27,7 @@ class ServerShadowsocksSave extends FormRequest
             'obfs_settings' => 'nullable|array',
             'tags' => 'nullable|array',
             'excludes' => 'nullable|array',
+            'ips' => 'nullable|array',
             'rate' => 'required|numeric'
         ];
     }

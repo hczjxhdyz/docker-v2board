@@ -259,7 +259,14 @@ class ServerService
     {
         foreach ($servers as $k => $v) {
             $serverType = strtoupper($v['type']);
-            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['parent_id'] ?? $v['id']));
+
+            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['id'])) ?? 0;
+            // 如果是子节点，先尝试从缓存中获取
+            if($pid = $v['parent_id']){
+                // 获取缓存
+                $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . $serverType . '_ONLINE_USER', $v['id'])) ?? [];
+                $servers[$k]['online'] = (collect($onlineUsers)->whereIn('ip', $v['ips'])->sum('online_user')) . "|{$servers[$k]['online']}";
+            }
             $servers[$k]['last_check_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_CHECK_AT", $v['parent_id'] ?? $v['id']));
             $servers[$k]['last_push_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_PUSH_AT", $v['parent_id'] ?? $v['id']));
             if ((time() - 300) >= $servers[$k]['last_check_at']) {
@@ -312,6 +319,39 @@ class ServerService
                 return ServerHysteria::find($serverId);
             case 'vless':
                 return ServerVless::find($serverId);
+            default:
+                return false;
+        }
+    }
+
+    // 根据节点IP和父级别节点ID查询字节点
+    public function getChildServer($serverId, $serverType, $nodeIp){
+        switch ($serverType) {
+            case 'vmess':
+                return ServerVmess::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'shadowsocks':
+                return ServerShadowsocks::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'trojan':
+                return ServerTrojan::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'hysteria':
+                return ServerHysteria::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'vless':
+                return ServerVless::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
             default:
                 return false;
         }

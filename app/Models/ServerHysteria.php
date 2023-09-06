@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerHysteria extends Model
 {
@@ -15,6 +16,12 @@ class ServerHysteria extends Model
         'group_id' => 'array',
         'route_id' => 'array',
         'tags' => 'array',
+        'ips' => 'array',
         'excludes' => 'array'
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
 }

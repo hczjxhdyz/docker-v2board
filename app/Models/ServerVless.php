@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerVless extends Model
 {
@@ -17,6 +18,12 @@ class ServerVless extends Model
         'tls_settings' => 'array',
         'network_settings' => 'array',
         'tags' => 'array',
-        'excludes' => 'array'
+        'excludes' => 'array',
+        'ips' => 'array'
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
 }

@@ -26,6 +26,7 @@ class ServerTrojanSave extends FormRequest
             'server_name' => 'nullable',
             'tags' => 'nullable|array',
             'excludes' => 'nullable|array',
+            'ips' => 'nullable|array',
             'rate' => 'required|numeric'
         ];
     }

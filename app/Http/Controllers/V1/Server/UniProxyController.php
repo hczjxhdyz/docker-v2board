@@ -60,19 +60,21 @@ class UniProxyController extends Controller
 
         // 增加单节点多服务器统计在线人数
         $ip = $request->ip();
+        $id = $request->input("id");
         $time = time();
         $cacheKey =  CacheKey::get('MULTI_SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id);
 
         // 1、获取节点节点在线人数缓存
         $onlineUsers = Cache::get($cacheKey) ?? [];
         $onlineCollection = collect($onlineUsers, true);
-        // 过滤掉超过3600秒的记录
+        // 过滤掉超过600秒的记录
         $onlineCollection = $onlineCollection->reject(function ($item) use ($time) {
-            return $item['time'] < ($time - 3600);
+            return $item['time'] < ($time - 600);
         });
 
         // 定义数据
         $updatedItem = [
+            'id' => $id ?? $ip,
             'ip' => $ip,
             'online_user' => count($data),
             'time' => $time
@@ -82,7 +84,7 @@ class UniProxyController extends Controller
         // 使用 Redis 的乐观锁机制来更新缓存
         Cache::lock($onlineUsersLockKey)->get(function () use ($cacheKey, $onlineCollection, $updatedItem) {
             $existingItemIndex = $onlineCollection->search(function ($item) use ($updatedItem) {
-                return $item['ip'] === $updatedItem['ip'];
+                return $item['id'] ?? '' === $updatedItem['id'];
             });
             if ($existingItemIndex !== false) {
                 $onlineCollection[$existingItemIndex] = $updatedItem;
@@ -96,8 +98,12 @@ class UniProxyController extends Controller
         $online_user = $onlineCollection->sum('online_user');
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $online_user, 3600);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_LAST_PUSH_AT', $this->nodeInfo->id), time(), 3600);
+
+        // 查询是否存在子节点
+        $childServer = null;
+        if ($this->nodeInfo->parent_id == null) $childServer = $this->serverService->getChildServer($this->nodeId, $this->nodeType, $ip);
         $userService = new UserService();
-        $userService->trafficFetch($this->nodeInfo->toArray(), $this->nodeType, $data);
+        $userService->trafficFetch($this->nodeInfo->toArray(), $this->nodeType, $data, $childServer ? $childServer->toArray() : null);
 
         return response([
             'data' => true
