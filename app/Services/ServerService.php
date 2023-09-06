@@ -262,9 +262,9 @@ class ServerService
 
             $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['parent_id'] ?? $v['id'])) ?? 0;
             // 如果是子节点，先尝试从缓存中获取
-            if($v['parent_id']){
+            if($pid = $v['parent_id']){
                 // 获取缓存
-                $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . $serverType . '_ONLINE_USER', $v['id'])) ?? [];
+                $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . $serverType . '_ONLINE_USER', $pid)) ?? [];
                 $servers[$k]['online'] = (collect($onlineUsers)->whereIn('ip', $v['ips'])->sum('online_user')) . "|{$servers[$k]['online']}";
             }
             $servers[$k]['last_check_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_CHECK_AT", $v['parent_id'] ?? $v['id']));
