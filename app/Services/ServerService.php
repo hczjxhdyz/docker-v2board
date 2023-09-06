@@ -260,9 +260,9 @@ class ServerService
         foreach ($servers as $k => $v) {
             $serverType = strtoupper($v['type']);
 
-            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['id'])) ?? 0;
+            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['parent_id'] ?? $v['id'])) ?? 0;
             // 如果是子节点，先尝试从缓存中获取
-            if($pid = $v['parent_id']){
+            if($v['parent_id']){
                 // 获取缓存
                 $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . $serverType . '_ONLINE_USER', $v['id'])) ?? [];
                 $servers[$k]['online'] = (collect($onlineUsers)->whereIn('ip', $v['ips'])->sum('online_user')) . "|{$servers[$k]['online']}";
