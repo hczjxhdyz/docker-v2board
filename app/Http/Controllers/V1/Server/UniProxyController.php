@@ -80,20 +80,16 @@ class UniProxyController extends Controller
             'time' => $time
         ];
 
-        $onlineUsersLockKey = 'online_users_lock:' . $cacheKey;
-        // 使用 Redis 的乐观锁机制来更新缓存
-        Cache::lock($onlineUsersLockKey)->get(function () use ($cacheKey, $onlineCollection, $updatedItem) {
-            $existingItemIndex = $onlineCollection->search(function ($item) use ($updatedItem) {
-                return $item['id'] ?? '' === $updatedItem['id'];
-            });
-            if ($existingItemIndex !== false) {
-                $onlineCollection[$existingItemIndex] = $updatedItem;
-            } else {
-                $onlineCollection->push($updatedItem);
-            }
-            $onlineUsers = $onlineCollection->all();
-            Cache::put($cacheKey, $onlineUsers, 3600);
+        $existingItemIndex = $onlineCollection->search(function ($item) use ($updatedItem) {
+            return ($item['id'] ?? '') === $updatedItem['id'];
         });
+        if ($existingItemIndex !== false) {
+            $onlineCollection[$existingItemIndex] = $updatedItem;
+        } else {
+            $onlineCollection->push($updatedItem);
+        }
+        $onlineUsers = $onlineCollection->all();
+        Cache::put($cacheKey, $onlineUsers, 3600);
 
         $online_user = $onlineCollection->sum('online_user');
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_ONLINE_USER', $this->nodeInfo->id), $online_user, 3600);
