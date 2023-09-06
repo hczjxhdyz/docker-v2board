@@ -14,6 +14,17 @@ class ClientController extends Controller
 {
     public function subscribe(Request $request)
     {
+        $allowedTypes = ['vmess', 'vless', 'trojan', 'hysteria', 'shadowsocks'];
+        if($types = $request->input('types')){
+            $typesArr = explode(',', $types);
+            foreach($typesArr as $type){
+                if (!in_array($type, $allowedTypes)){
+                    $typesArr = [];
+                    break;
+                }
+            }
+        };
+
         $flag = $request->input('flag')
             ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
         $ip = $request->ip();
@@ -32,6 +43,15 @@ class ClientController extends Controller
             // 获取服务器列表
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
+            // 过滤线路类型
+            if (isset($typesArr) && !blank($typesArr)){
+                $servers = collect($servers)->filter(function($server) use ($typesArr){
+                    foreach($typesArr as $type){
+                        if($type == $server['type']) return true;
+                    };
+                    return false;
+                });
+            }
             // 如果是中国IP、则开开启订阅过滤
             $rejectServerCount = 0;
             if(!blank($region) && strpos($region, '中国') !== false){
