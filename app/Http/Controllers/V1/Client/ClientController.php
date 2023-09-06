@@ -49,7 +49,7 @@ class ClientController extends Controller
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
             // 过滤线路类型
-            if (!blank($typesArr)){
+            if (isset($typesArr) && !blank($typesArr)){
                 $servers = collect($servers)->filter(function($server) use ($typesArr){
                     foreach($typesArr as $type){
                         if($type == $server['type']) return true;
