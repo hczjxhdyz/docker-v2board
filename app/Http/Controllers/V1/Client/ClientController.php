@@ -14,6 +14,7 @@ class ClientController extends Controller
 {
     public function subscribe(Request $request)
     {
+        // 节点类型筛选
         $allowedTypes = ['vmess', 'vless', 'trojan', 'hysteria', 'shadowsocks'];
         if($types = $request->input('types')){
             $typesArr = explode(',', $types);
@@ -23,6 +24,10 @@ class ClientController extends Controller
                     break;
                 }
             }
+        };
+        //  节点关键词筛选
+        if($filter = $request->input('filter')){
+            if(mb_strlen($filter) > 20) $filter = null;
         };
 
         $flag = $request->input('flag')
@@ -44,13 +49,23 @@ class ClientController extends Controller
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
             // 过滤线路类型
-            if (isset($typesArr) && !blank($typesArr)){
+            if (!blank($typesArr)){
                 $servers = collect($servers)->filter(function($server) use ($typesArr){
                     foreach($typesArr as $type){
                         if($type == $server['type']) return true;
                     };
                     return false;
-                });
+                })->values()->all() ?? [];
+            }
+            // 关键词过滤线路
+            if (!blank($filter)){
+                $filterArr = explode("|" ,str_replace(['|','｜',','],"|" , $filter));
+                $servers = collect($servers)->filter(function($server) use ($filterArr){
+                    foreach($filterArr as $filter){
+                        if(strpos($server['name'],$filter) !== false) return true;
+                    };
+                    return false;
+                })->values()->all() ?? [];
             }
             // 如果是中国IP、则开开启订阅过滤
             $rejectServerCount = 0;
