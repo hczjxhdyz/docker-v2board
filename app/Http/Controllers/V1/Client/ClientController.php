@@ -16,81 +16,61 @@ class ClientController extends Controller
     {
         // 节点类型筛选
         $allowedTypes = ['vmess', 'vless', 'trojan', 'hysteria', 'shadowsocks'];
-        if($types = $request->input('types')){
-            $typesArr = explode(',', $types);
-            foreach($typesArr as $type){
-                if (!in_array($type, $allowedTypes)){
-                    $typesArr = [];
-                    break;
-                }
-            }
-        };
-        //  节点关键词筛选
-        if($filter = $request->input('filter')){
-            if(mb_strlen($filter) > 20) $filter = null;
-        };
+        $typesArr = $request->input('types') ?  collect(explode('|', str_replace(['|','｜',','], "|" , $request->input('types'))))->reject(function($type) use ($allowedTypes){
+            return !in_array($type, $allowedTypes);
+        })->values()->all() : [];
 
-        $flag = $request->input('flag')
-            ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
-        $ip = $request->ip();
-        if ($request->input('ip')) $ip = $request->input('ip');
+        //  节点关键词筛选字段获取
+        $filterArr = (mb_strlen($request->input('filter')) > 20) ? null : explode("|" ,str_replace(['|','｜',','], "|" , $request->input('filter')));
+
+        $flag = $request->input('flag') ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $ip = $request->input('ip') ?? $request->ip();
 
         $flag = strtolower($flag);
         $user = $request->user;
         // account not expired and is not banned.
         $userService = new UserService();
         if ($userService->isAvailable($user)) {
-            // 获取IP地址信息 如果是国外IP跳过
+            // 获取IP地址信息
             $ip2region = new \Ip2Region();
             $geo = filter_var($ip,FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? $ip2region->memorySearch($ip) : [];
-            $region = $geo['region'] ?? '';
+            $region = $geo['region'];
 
             // 获取服务器列表
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
-            // 过滤线路类型
-            if (isset($typesArr) && !blank($typesArr)){
-                $servers = collect($servers)->filter(function($server) use ($typesArr){
-                    foreach($typesArr as $type){
-                        if($type == $server['type']) return true;
-                    };
-                    return false;
-                })->values()->all() ?? [];
-            }
-            // 关键词过滤线路
-            if (!blank($filter)){
-                $filterArr = explode("|" ,str_replace(['|','｜',','],"|" , $filter));
-                $servers = collect($servers)->filter(function($server) use ($filterArr){
+
+            // 判断不满足，不满足的直接过滤掉
+            $serversFiltered = collect($servers)->reject(function ($server) use ($typesArr, $filterArr, $region){
+                // 过滤类型
+                if($typesArr){
+                    if(!in_array($server['type'], $typesArr)) return true;
+                }
+                // 过滤关键词
+                if($filterArr){
+                    $rejectFlag = true;
                     foreach($filterArr as $filter){
-                        if(strpos($server['name'],$filter) !== false) return true;
-                    };
-                    return false;
-                })->values()->all() ?? [];
-            }
-            // 如果是中国IP、则开开启订阅过滤
-            $rejectServerCount = 0;
-            if(!blank($region) && strpos($region, '中国') !== false){
-                $serversFiltered = collect($servers)->filter(function($item) use ($region){
-                    $excludes = $item['excludes'];
-                    if(blank($excludes)) return true;
+                        if(strpos($server['name'],$filter) !== false) $rejectFlag = false;
+                    }
+                    if($rejectFlag) return true;
+                }
+                // 过滤地区
+                if(strpos($region, '中国') !== false){
+                    $excludes = $server['excludes'];
+                    if(blank($excludes)) return false;
                     foreach($excludes as $v){
                         $excludeList = explode("|",str_replace(["｜",","," ","，"],"|",$v));
-                        $containsAll = true;
+                        $rejectFlag = false;
                         foreach($excludeList as $needle){
-                            $position = strpos($region, $needle);
-                            if($position === false){
-                                $containsAll = false;
-                                break;
+                            if(strpos($region, $needle) !== false){
+                                return true;
                             }
                         }
-                        if ($containsAll === true) return false;
                     };
-                    return true;
-                })->values()->all() ?? [];
-                $rejectServerCount = count($servers) - count($serversFiltered);
-                $servers = $serversFiltered;
-            }
-            $this->setSubscribeInfoToServers($servers, $user, $rejectServerCount);
+                }
+            })->values()->all();
+            $this->setSubscribeInfoToServers($serversFiltered, $user, count($servers) - count($serversFiltered));
+            $servers = $serversFiltered;
             if ($flag) {
                 foreach (array_reverse(glob(app_path('Protocols') . '/*.php')) as $file) {
                     $file = 'App\\Protocols\\' . basename($file, '.php');
