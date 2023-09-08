@@ -44,9 +44,9 @@ class ConfigController extends Controller
             'subject' => 'This is v2board test email',
             'template_name' => 'notify',
             'template_value' => [
-                'name' => Setting('app_name', 'V2Board'),
+                'name' => SettingWithoutCache('app_name', 'V2Board'),
                 'content' => 'This is v2board test email',
-                'url' => Setting('app_url')
+                'url' => SettingWithoutCache('app_url')
             ]
         ]);
         return response([
@@ -57,7 +57,7 @@ class ConfigController extends Controller
 
     public function setTelegramWebhook(Request $request)
     {
-        $hookUrl = url('/api/v1/guest/telegram/webhook?access_token=' . md5(Setting('telegram_bot_token', $request->input('telegram_bot_token'))));
+        $hookUrl = url('/api/v1/guest/telegram/webhook?access_token=' . md5(SettingWithoutCache('telegram_bot_token', $request->input('telegram_bot_token'))));
         $telegramService = new TelegramService($request->input('telegram_bot_token'));
         $telegramService->getMe();
         $telegramService->setWebhook($hookUrl);
@@ -71,93 +71,93 @@ class ConfigController extends Controller
         $key = $request->input('key');
         $data = [
             'invite' => [
-                'invite_force' => (int)Setting('invite_force', 0),
-                'invite_commission' => Setting('invite_commission', 10),
-                'invite_gen_limit' => Setting('invite_gen_limit', 5),
-                'invite_never_expire' => Setting('invite_never_expire', 0),
-                'commission_first_time_enable' => Setting('commission_first_time_enable', 1),
-                'commission_auto_check_enable' => Setting('commission_auto_check_enable', 1),
-                'commission_withdraw_limit' => Setting('commission_withdraw_limit', 100),
-                'commission_withdraw_method' => Setting('commission_withdraw_method', Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT),
-                'withdraw_close_enable' => Setting('withdraw_close_enable', 0),
-                'commission_distribution_enable' => Setting('commission_distribution_enable', 0),
-                'commission_distribution_l1' => Setting('commission_distribution_l1'),
-                'commission_distribution_l2' => Setting('commission_distribution_l2'),
-                'commission_distribution_l3' => Setting('commission_distribution_l3')
+                'invite_force' => (int)SettingWithoutCache('invite_force', 0),
+                'invite_commission' => SettingWithoutCache('invite_commission', 10),
+                'invite_gen_limit' => SettingWithoutCache('invite_gen_limit', 5),
+                'invite_never_expire' => SettingWithoutCache('invite_never_expire', 0),
+                'commission_first_time_enable' => SettingWithoutCache('commission_first_time_enable', 1),
+                'commission_auto_check_enable' => SettingWithoutCache('commission_auto_check_enable', 1),
+                'commission_withdraw_limit' => SettingWithoutCache('commission_withdraw_limit', 100),
+                'commission_withdraw_method' => SettingWithoutCache('commission_withdraw_method', Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT),
+                'withdraw_close_enable' => SettingWithoutCache('withdraw_close_enable', 0),
+                'commission_distribution_enable' => SettingWithoutCache('commission_distribution_enable', 0),
+                'commission_distribution_l1' => SettingWithoutCache('commission_distribution_l1'),
+                'commission_distribution_l2' => SettingWithoutCache('commission_distribution_l2'),
+                'commission_distribution_l3' => SettingWithoutCache('commission_distribution_l3')
             ],
             'site' => [
-                'logo' => Setting('logo'),
-                'force_https' => (int)Setting('force_https', 0),
-                'stop_register' => (int)Setting('stop_register', 0),
-                'app_name' => Setting('app_name', 'V2Board'),
-                'app_description' => Setting('app_description', 'V2Board is best!'),
-                'app_url' => Setting('app_url'),
-                'subscribe_url' => Setting('subscribe_url'),
-                'try_out_plan_id' => (int)Setting('try_out_plan_id', 0),
-                'try_out_hour' => (int)Setting('try_out_hour', 1),
-                'tos_url' => Setting('tos_url'),
-                'currency' => Setting('currency', 'CNY'),
-                'currency_symbol' => Setting('currency_symbol', '¥'),
+                'logo' => SettingWithoutCache('logo'),
+                'force_https' => (int)SettingWithoutCache('force_https', 0),
+                'stop_register' => (int)SettingWithoutCache('stop_register', 0),
+                'app_name' => SettingWithoutCache('app_name', 'V2Board'),
+                'app_description' => SettingWithoutCache('app_description', 'V2Board is best!'),
+                'app_url' => SettingWithoutCache('app_url'),
+                'subscribe_url' => SettingWithoutCache('subscribe_url'),
+                'try_out_plan_id' => (int)SettingWithoutCache('try_out_plan_id', 0),
+                'try_out_hour' => (int)SettingWithoutCache('try_out_hour', 1),
+                'tos_url' => SettingWithoutCache('tos_url'),
+                'currency' => SettingWithoutCache('currency', 'CNY'),
+                'currency_symbol' => SettingWithoutCache('currency_symbol', '¥'),
             ],
             'subscribe' => [
-                'plan_change_enable' => (int)Setting('plan_change_enable', 1),
-                'reset_traffic_method' => (int)Setting('reset_traffic_method', 0),
-                'surplus_enable' => (int)Setting('surplus_enable', 1),
-                'new_order_event_id' => (int)Setting('new_order_event_id', 0),
-                'renew_order_event_id' => (int)Setting('renew_order_event_id', 0),
-                'change_order_event_id' => (int)Setting('change_order_event_id', 0),
-                'show_info_to_server_enable' => (int)Setting('show_info_to_server_enable', 0)
+                'plan_change_enable' => (int)SettingWithoutCache('plan_change_enable', 1),
+                'reset_traffic_method' => (int)SettingWithoutCache('reset_traffic_method', 0),
+                'surplus_enable' => (int)SettingWithoutCache('surplus_enable', 1),
+                'new_order_event_id' => (int)SettingWithoutCache('new_order_event_id', 0),
+                'renew_order_event_id' => (int)SettingWithoutCache('renew_order_event_id', 0),
+                'change_order_event_id' => (int)SettingWithoutCache('change_order_event_id', 0),
+                'show_info_to_server_enable' => (int)SettingWithoutCache('show_info_to_server_enable', 0)
             ],
             'frontend' => [
-                'frontend_theme' => Setting('frontend_theme', 'v2board'),
-                'frontend_theme_sidebar' => Setting('frontend_theme_sidebar', 'light'),
-                'frontend_theme_header' => Setting('frontend_theme_header', 'dark'),
-                'frontend_theme_color' => Setting('frontend_theme_color', 'default'),
-                'frontend_background_url' => Setting('frontend_background_url'),
+                'frontend_theme' => SettingWithoutCache('frontend_theme', 'v2board'),
+                'frontend_theme_sidebar' => SettingWithoutCache('frontend_theme_sidebar', 'light'),
+                'frontend_theme_header' => SettingWithoutCache('frontend_theme_header', 'dark'),
+                'frontend_theme_color' => SettingWithoutCache('frontend_theme_color', 'default'),
+                'frontend_background_url' => SettingWithoutCache('frontend_background_url'),
             ],
             'server' => [
-                'server_token' => Setting('server_token'),
-                'server_pull_interval' => Setting('server_pull_interval', 60),
-                'server_push_interval' => Setting('server_push_interval', 60),
+                'server_token' => SettingWithoutCache('server_token'),
+                'server_pull_interval' => SettingWithoutCache('server_pull_interval', 60),
+                'server_push_interval' => SettingWithoutCache('server_push_interval', 60),
             ],
             'email' => [
-                'email_template' => Setting('email_template', 'default'),
-                'email_host' => Setting('email_host'),
-                'email_port' => Setting('email_port'),
-                'email_username' => Setting('email_username'),
-                'email_password' => Setting('email_password'),
-                'email_encryption' => Setting('email_encryption'),
-                'email_from_address' => Setting('email_from_address')
+                'email_template' => SettingWithoutCache('email_template', 'default'),
+                'email_host' => SettingWithoutCache('email_host'),
+                'email_port' => SettingWithoutCache('email_port'),
+                'email_username' => SettingWithoutCache('email_username'),
+                'email_password' => SettingWithoutCache('email_password'),
+                'email_encryption' => SettingWithoutCache('email_encryption'),
+                'email_from_address' => SettingWithoutCache('email_from_address')
             ],
             'telegram' => [
-                'telegram_bot_enable' => Setting('telegram_bot_enable', 0),
-                'telegram_bot_token' => Setting('telegram_bot_token'),
-                'telegram_discuss_link' => Setting('telegram_discuss_link')
+                'telegram_bot_enable' => SettingWithoutCache('telegram_bot_enable', 0),
+                'telegram_bot_token' => SettingWithoutCache('telegram_bot_token'),
+                'telegram_discuss_link' => SettingWithoutCache('telegram_discuss_link')
             ],
             'app' => [
-                'windows_version' => Setting('windows_version'),
-                'windows_download_url' => Setting('windows_download_url'),
-                'macos_version' => Setting('macos_version'),
-                'macos_download_url' => Setting('macos_download_url'),
-                'android_version' => Setting('android_version'),
-                'android_download_url' => Setting('android_download_url')
+                'windows_version' => SettingWithoutCache('windows_version'),
+                'windows_download_url' => SettingWithoutCache('windows_download_url'),
+                'macos_version' => SettingWithoutCache('macos_version'),
+                'macos_download_url' => SettingWithoutCache('macos_download_url'),
+                'android_version' => SettingWithoutCache('android_version'),
+                'android_download_url' => SettingWithoutCache('android_download_url')
             ],
             'safe' => [
-                'email_verify' => (int)Setting('email_verify', 0),
-                'safe_mode_enable' => (int)Setting('safe_mode_enable', 0),
-                'secure_path' => Setting('secure_path', Setting('frontend_admin_path', hash('crc32b', config('app.key')))),
-                'email_whitelist_enable' => (int)Setting('email_whitelist_enable', 0),
-                'email_whitelist_suffix' => Setting('email_whitelist_suffix', Dict::EMAIL_WHITELIST_SUFFIX_DEFAULT),
-                'email_gmail_limit_enable' => Setting('email_gmail_limit_enable', 0),
-                'recaptcha_enable' => (int)Setting('recaptcha_enable', 0),
-                'recaptcha_key' => Setting('recaptcha_key'),
-                'recaptcha_site_key' => Setting('recaptcha_site_key'),
-                'register_limit_by_ip_enable' => (int)Setting('register_limit_by_ip_enable', 0),
-                'register_limit_count' => Setting('register_limit_count', 3),
-                'register_limit_expire' => Setting('register_limit_expire', 60),
-                'password_limit_enable' => (int)Setting('password_limit_enable', 1),
-                'password_limit_count' => Setting('password_limit_count', 5),
-                'password_limit_expire' => Setting('password_limit_expire', 60)
+                'email_verify' => (int)SettingWithoutCache('email_verify', 0),
+                'safe_mode_enable' => (int)SettingWithoutCache('safe_mode_enable', 0),
+                'secure_path' => SettingWithoutCache('secure_path', SettingWithoutCache('frontend_admin_path', hash('crc32b', config('app.key')))),
+                'email_whitelist_enable' => (int)SettingWithoutCache('email_whitelist_enable', 0),
+                'email_whitelist_suffix' => SettingWithoutCache('email_whitelist_suffix', Dict::EMAIL_WHITELIST_SUFFIX_DEFAULT),
+                'email_gmail_limit_enable' => SettingWithoutCache('email_gmail_limit_enable', 0),
+                'recaptcha_enable' => (int)SettingWithoutCache('recaptcha_enable', 0),
+                'recaptcha_key' => SettingWithoutCache('recaptcha_key'),
+                'recaptcha_site_key' => SettingWithoutCache('recaptcha_site_key'),
+                'register_limit_by_ip_enable' => (int)SettingWithoutCache('register_limit_by_ip_enable', 0),
+                'register_limit_count' => SettingWithoutCache('register_limit_count', 3),
+                'register_limit_expire' => SettingWithoutCache('register_limit_expire', 60),
+                'password_limit_enable' => (int)SettingWithoutCache('password_limit_enable', 1),
+                'password_limit_count' => SettingWithoutCache('password_limit_count', 5),
+                'password_limit_expire' => SettingWithoutCache('password_limit_expire', 60)
             ]
         ];
         // 获取数据库设置列表

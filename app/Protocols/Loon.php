@@ -20,7 +20,6 @@ class Loon
         $user = $this->user;
 
         $uri = '';
-        header("Subscription-Userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
 
         foreach ($servers as $item) {
             if ($item['type'] === 'shadowsocks'
@@ -40,7 +39,8 @@ class Loon
                 $uri .= self::buildTrojan($user['uuid'], $item);
             }
         }
-        return $uri;
+        return response($uri, 200)
+                ->header('Subscription-Userinfo', "upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
     }
 
 

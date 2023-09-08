@@ -23,7 +23,7 @@ class ClientController extends Controller
         //  节点关键词筛选字段获取
         $filterArr = (mb_strlen($request->input('filter')) > 20) ? null : explode("|" ,str_replace(['|','｜',','], "|" , $request->input('filter')));
 
-        $flag = $request->input('flag') ?? ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $flag = $request->input('flag') ?? $request->header('User-Agent', '');
         $ip = $request->input('ip') ?? $request->ip();
 
         $flag = strtolower($flag);
@@ -84,12 +84,12 @@ class ClientController extends Controller
                     };
                     // 判断是否匹配
                     if ($isMatch()) {
-                        die($class->handle());
+                        return $class->handle();
                     }
                 }
             }
             $class = new General($user, $servers);
-            die($class->handle());
+            return $class->handle();
         }
     }
 

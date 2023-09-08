@@ -75,6 +75,7 @@ proxy-groups:
   - name: 🛑 全球拦截
     type: select
     proxies:
+      - 🔰 节点选择
       - REJECT
       - DIRECT
   - name: 🐟 漏网之鱼

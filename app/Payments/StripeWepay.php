@@ -72,7 +72,7 @@ class StripeWepay {
         try {
             $event = \Stripe\Webhook::constructEvent(
                 file_get_contents('php://input'),
-                $_SERVER['HTTP_STRIPE_SIGNATURE'],
+                request()->header('HTTP_STRIPE_SIGNATURE'),
                 $this->config['stripe_webhook_key']
             );
         } catch (\Stripe\Error\SignatureVerification $e) {
@@ -92,7 +92,7 @@ class StripeWepay {
                 $object = $event->data->object;
                 if ($object->status === 'succeeded') {
                     if (!isset($object->metadata->out_trade_no) && !isset($object->source->metadata)) {
-                        die('order error');
+                        return('order error');
                     }
                     $metaData = isset($object->metadata->out_trade_no) ? $object->metadata : $object->source->metadata;
                     $tradeNo = $metaData->out_trade_no;
@@ -105,7 +105,7 @@ class StripeWepay {
             default:
                 abort(500, 'event is not support');
         }
-        die('success');
+        return('success');
     }
 
     private function exchange($from, $to)

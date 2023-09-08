@@ -37,7 +37,7 @@ class ThemeController extends Controller
         return response([
             'data' => [
                 'themes' => $themeConfigs,
-                'active' => Setting('frontend_theme', 'v2board')
+                'active' => SettingWithoutCache('frontend_theme', 'v2board')
             ]
         ]);
     }

@@ -50,7 +50,7 @@ class BTCPay {
         $ret_raw = self::_curlPost($this->config['btcpay_url'] . 'api/v1/stores/' . $this->config['btcpay_storeId'] . '/invoices', $params_string);
 
         $ret = @json_decode($ret_raw, true);
-        
+
         if(empty($ret['checkoutLink'])) {
             abort(500, "error!");
         }
@@ -90,20 +90,20 @@ class BTCPay {
         $invoiceDetail = file_get_contents($this->config['btcpay_url'] . 'api/v1/stores/' . $this->config['btcpay_storeId'] . '/invoices/' . $json_param['invoiceId'], false, $context);
         $invoiceDetail = json_decode($invoiceDetail, true);
 
-    
+
         $out_trade_no = $invoiceDetail['metadata']["orderId"];
         $pay_trade_no=$json_param['invoiceId'];
         return [
             'trade_no' => $out_trade_no,
             'callback_no' => $pay_trade_no
         ];
-        http_response_code(200);
-        die('success');
+        return response('success', 200);
+
     }
 
 
     private function _curlPost($url,$params=false){
-        
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -125,7 +125,7 @@ class BTCPay {
      * @return bool
      */
     private function hashEqual($str1, $str2)
-    {   
+    {
 
         if (function_exists('hash_equals')) {
             return \hash_equals($str1, $str2);
@@ -143,6 +143,6 @@ class BTCPay {
             return !$ret;
         }
     }
-    
+
 }
 

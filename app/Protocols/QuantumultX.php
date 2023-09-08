@@ -20,7 +20,6 @@ class QuantumultX
         $servers = $this->servers;
         $user = $this->user;
         $uri = '';
-        header("subscription-userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
         foreach ($servers as $item) {
             if ($item['type'] === 'shadowsocks') {
                 $uri .= self::buildShadowsocks($user['uuid'], $item);
@@ -32,7 +31,8 @@ class QuantumultX
                 $uri .= self::buildTrojan($user['uuid'], $item);
             }
         }
-        return base64_encode($uri);
+        return response(base64_encode($uri), 200)
+                    ->header('subscription-userinfo', "upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
     }
 
     public static function buildShadowsocks($password, $server)

@@ -22,7 +22,6 @@ class Surge
         $user = $this->user;
 
         $appName = Setting('app_name', 'V2Board');
-        header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName).".conf");
 
         $proxies = '';
         $proxyGroup = '';
@@ -65,7 +64,7 @@ class Surge
 
         // Subscription link
         $subsURL = Helper::getSubscribeUrl("/api/v1/client/subscribe?token={$user['token']}");
-        $subsDomain = $_SERVER['HTTP_HOST'];
+        $subsDomain = request()->header('Host');
         $subsURL = 'https://' . $subsDomain . '/api/v1/client/subscribe?token=' . $user['token'];
 
         $config = str_replace('$subs_link', $subsURL, $config);
@@ -81,7 +80,8 @@ class Surge
         $subscribeInfo = "title={$appName}订阅信息, content=上传流量：{$upload}GB\\n下载流量：{$download}GB\\n剩余流量：{$useTraffic}GB\\n套餐流量：{$totalTraffic}GB\\n到期时间：{$expireDate}";
         $config = str_replace('$subscribe_info', $subscribeInfo, $config);
 
-        return $config;
+        return response($config, 200)
+                    ->header('content-disposition', "attachment;filename*=UTF-8''".rawurlencode($appName).".conf");
     }
 
 

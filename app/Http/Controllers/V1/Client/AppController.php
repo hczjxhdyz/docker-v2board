@@ -56,7 +56,7 @@ class AppController extends Controller
         foreach ($config['proxy-groups'] as $k => $v) {
             $config['proxy-groups'][$k]['proxies'] = array_merge($config['proxy-groups'][$k]['proxies'], $proxies);
         }
-        die(Yaml::dump($config));
+        return(Yaml::dump($config));
     }
 
     public function getVersion(Request $request)

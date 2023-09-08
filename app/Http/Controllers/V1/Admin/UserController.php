@@ -259,8 +259,8 @@ class UserController extends Controller
                 'subject' => $request->input('subject'),
                 'template_name' => 'notify',
                 'template_value' => [
-                    'name' => Setting('app_name', 'V2Board'),
-                    'url' => Setting('app_url'),
+                    'name' => SettingWithoutCache('app_name', 'V2Board'),
+                    'url' => SettingWithoutCache('app_url'),
                     'content' => $request->input('content')
                 ]
             ],

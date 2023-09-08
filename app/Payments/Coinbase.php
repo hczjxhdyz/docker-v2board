@@ -44,11 +44,11 @@ class Coinbase {
         ];
 
         $params_string = http_build_query($params);
-        
+
         $ret_raw = self::_curlPost($this->config['coinbase_url'], $params_string);
 
         $ret = @json_decode($ret_raw, true);
-        
+
         if(empty($ret['data']['hosted_url'])) {
             abort(500, "error!");
         }
@@ -59,9 +59,9 @@ class Coinbase {
     }
 
     public function notify($params) {
-        
+
         $payload = trim(file_get_contents('php://input'));
-        $json_param = json_decode($payload, true); 
+        $json_param = json_decode($payload, true);
 
 
         $headerName = 'X-Cc-Webhook-Signature';
@@ -72,20 +72,20 @@ class Coinbase {
         if (!self::hashEqual($signatureHeader, $computedSignature)) {
             abort(400, 'HMAC signature does not match');
         }
-        
+
         $out_trade_no = $json_param['event']['data']['metadata']['outTradeNo'];
         $pay_trade_no=$json_param['event']['id'];
         return [
             'trade_no' => $out_trade_no,
             'callback_no' => $pay_trade_no
         ];
-        http_response_code(200);
-        die('success');
+        return response('success', 200);
+
     }
 
 
     private function _curlPost($url,$params=false){
-        
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -124,6 +124,6 @@ class Coinbase {
             return !$ret;
         }
     }
-    
+
 }
 
