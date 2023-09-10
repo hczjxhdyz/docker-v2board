@@ -61,7 +61,7 @@ class BTCPay {
     }
 
     public function notify($params) {
-        $payload = trim(file_get_contents('php://input'));
+        $payload = trim(request()->getContent());
 
         $headers = getallheaders();
 

@@ -60,7 +60,7 @@ class Coinbase {
 
     public function notify($params) {
 
-        $payload = trim(file_get_contents('php://input'));
+        $payload = trim(request()->getContent());
         $json_param = json_decode($payload, true);
 
 

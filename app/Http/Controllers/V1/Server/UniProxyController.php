@@ -55,7 +55,7 @@ class UniProxyController extends Controller
     // 后端提交数据
     public function push(Request $request)
     {
-        $data = file_get_contents('php://input');
+        $data = request()->getContent();
         $data = json_decode($data, true);
 
         // 增加单节点多服务器统计在线人数
@@ -71,7 +71,6 @@ class UniProxyController extends Controller
         $onlineCollection = $onlineCollection->reject(function ($item) use ($time) {
             return $item['time'] < ($time - 600);
         });
-
         // 定义数据
         $updatedItem = [
             'id' => $id ?? $ip,
