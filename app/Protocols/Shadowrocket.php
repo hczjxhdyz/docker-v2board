@@ -163,16 +163,16 @@ class Shadowrocket
                     break;
                 case 2:
                     $config['tls'] = 1;
-                    if (!isset($server['network_settings'])) break;
-                    $networkSettings = $server['network_settings'];
-                    if (isset($networkSettings['reality-opts'])){
-                        $realitySettings = $networkSettings['reality-opts'];
-                        $config['sni'] = $realitySettings['sni'];
-                        $config['pbk'] = $realitySettings['public-key'];
-                        $config['sid'] = $realitySettings['short-id'];
+                    $tls_settings = $server['tls_settings'];
+                    if(($tls_settings['public_key'] ?? null)
+                    && ($tls_settings['short_id'] ?? null)
+                    && ($tls_settings['server_name'] ?? null)){
+                        $config['sni'] = $tls_settings['server_name'];
+                        $config['pbk'] = $tls_settings['public_key'];
+                        $config['sid'] = $tls_settings['short_id'];
                         $fingerprints = ['chrome', 'firefox', 'safari', 'ios', 'edge', 'qq']; //随机客户端指纹
                         $config['fp'] = $fingerprints[rand(0,count($fingerprints) - 1)];
-                    }
+                    };
                     break;
             }
 

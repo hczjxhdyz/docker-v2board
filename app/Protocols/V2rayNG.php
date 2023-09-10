@@ -114,18 +114,14 @@ class V2rayNG
                     break;
                 case 2: //reality
                     $config['security'] = "reality";
-                    if(!isset($server['network_settings'])) break;
-                    $networkSettings = $server['network_settings'];
-
-                    if(isset($networkSettings['reality-opts'])
-                    && ($realitySettings = $networkSettings['reality-opts'])
-                    && $realitySettings['public-key']
-                    && $realitySettings['short-id']
-                    && $realitySettings['sni']){
-                        $config['servername'] = $realitySettings['sni'];
-                        $config['pbk'] = $realitySettings['public-key'];
-                        $config['sid'] = $realitySettings['short-id'];
-                        $config['sni'] = $realitySettings['sni'];
+                    $tls_settings = $server['tls_settings'];
+                    if(($tls_settings['public_key'] ?? null)
+                    && ($tls_settings['short_id'] ?? null)
+                    && ($tls_settings['server_name'] ?? null)){
+                        $config['pbk'] = $tls_settings['public_key'];
+                        $config['sid'] = $tls_settings['short_id'];
+                        $config['sni'] = $tls_settings['server_name'];
+                        $config['servername'] = $tls_settings['server_name'];
                         $config['spx'] = "/";
                         $fingerprints = ['chrome', 'firefox', 'safari', 'ios', 'edge', 'qq']; //随机客户端指纹
                         $config['fp'] = $fingerprints[rand(0,count($fingerprints) - 1)];

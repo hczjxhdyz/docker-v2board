@@ -196,20 +196,20 @@ class ClashMeta
                     break;
                 case 2:  //开启reality
                     $array['tls'] = true;
-                    $networkSettings = $server['network_settings'];
-                    if(isset($networkSettings['reality-opts'])
-                    && ($realitySettings = $networkSettings['reality-opts'])
-                    && $realitySettings['public-key']
-                    && $realitySettings['short-id']
-                    && $realitySettings['sni']){
-                        $array['servername'] = $realitySettings['sni'];
+                    $tls_settings = $server['tls_settings'];
+                    if (!empty($tls_settings['allowInsecure'])) $array['skip-cert-verify'] = (bool)$tls_settings['allowInsecure'];
+
+                    if(($tls_settings['public_key'] ?? null)
+                    && ($tls_settings['short_id'] ?? null)
+                    && ($tls_settings['server_name'] ?? null)){
+                        $array['servername'] = $tls_settings['server_name'];
                         $array['reality-opts'] = [
-                            'public-key' => $realitySettings['public-key'],
-                            'short-id' => $realitySettings['short-id']
+                            'public-key' => $tls_settings['public_key'],
+                            'short-id' => $tls_settings['short_id']
                         ];
+                        $fingerprints = ['chrome', 'firefox', 'safari', 'ios', 'edge', 'qq']; //随机客户端指纹
+                        $array['client-fingerprint'] = $fingerprints[rand(0,count($fingerprints) - 1)];
                     };
-                    $fingerprints = ['chrome', 'firefox', 'safari', 'ios', 'edge', 'qq']; //随机客户端指纹
-                    $array['client-fingerprint'] = $fingerprints[rand(0,count($fingerprints) - 1)];
                     break;
             }
         }
