@@ -19,34 +19,20 @@ class UniProxyController extends Controller
 
     public function __construct(ServerService $serverService)
     {
-        $token = $this->getToken();
-        if (empty($token)) {
-            throw new \Exception('token is null', 500);
-        }
-        if ($token !== Setting('server_token')) {
-            throw new \Exception('token is error', 500);
-        }
-        $this->nodeType = $this->getNodeType();
-        if ($this->nodeType === 'v2ray') $this->nodeType = 'vmess';
-        $this->nodeId = $this->getNodeId();
         $this->serverService = $serverService;
-        $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
-        if (!$this->nodeInfo) throw new \Exception('server is not exist', 500);
     }
 
-    public function getToken(){
-        return request()->input('token');
-    }
-    public function getNodeType(){
-        return request()->input('node_type');
-    }
-    public function getNodeId(){
-        return request()->input('node_id');
+    public function getNodeInfo(){
+        $this->nodeId = request()->input('node_id');
+        $this->nodeType = request()->input('node_type') === 'v2ray' ? 'vmess' : request()->input('node_type');
+        $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
+        if(!$this->nodeInfo) throw new \Exception('server is not exist', 500);
     }
 
     // 后端获取用户
     public function user(Request $request)
     {
+        $this->getNodeInfo();
         ini_set('memory_limit', -1);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_LAST_CHECK_AT', $this->nodeInfo->id), time(), 3600);
         $users = $this->serverService->getAvailableUsers($this->nodeInfo->group_id);
@@ -65,6 +51,7 @@ class UniProxyController extends Controller
     // 后端提交数据
     public function push(Request $request)
     {
+        $this->getNodeInfo();
         $data = request()->getContent();
         $data = json_decode($data, true);
 
@@ -118,6 +105,7 @@ class UniProxyController extends Controller
     // 后端获取配置
     public function config(Request $request)
     {
+        $this->getNodeInfo();
         switch ($this->nodeType) {
             case 'shadowsocks':
                 $response = [
