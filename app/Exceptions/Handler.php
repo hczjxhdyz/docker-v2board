@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Facade\Ignition\Exceptions\ViewException;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends ExceptionHandler
 {
@@ -62,6 +63,7 @@ class Handler extends ExceptionHandler
 
     protected function convertExceptionToArray(Throwable $e)
     {
+        Log::channel("daily")->info($e);
         return config('app.debug') ? [
             'message' => $e->getMessage(),
             'exception' => get_class($e),
