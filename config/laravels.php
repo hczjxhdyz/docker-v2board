@@ -268,7 +268,9 @@ return [
 
     'destroy_controllers' => [
         'enable'        => false,
-        'excluded_list' => [],
+        'excluded_list' => [
+            \App\Http\Controllers\V1\Server\UniProxyController::class
+        ],
     ],
 
     /*

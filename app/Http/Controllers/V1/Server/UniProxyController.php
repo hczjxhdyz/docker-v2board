@@ -17,21 +17,31 @@ class UniProxyController extends Controller
     private $nodeId;
     private $serverService;
 
-    public function __construct(Request $request)
+    public function __construct(ServerService $serverService)
     {
-        $token = $request->input('token');
+        $token = $this->getToken();
         if (empty($token)) {
-            abort(500, 'token is null');
+            throw new \Exception('token is null', 500);
         }
         if ($token !== Setting('server_token')) {
-            abort(500, 'token is error');
+            throw new \Exception('token is error', 500);
         }
-        $this->nodeType = $request->input('node_type');
+        $this->nodeType = $this->getNodeType();
         if ($this->nodeType === 'v2ray') $this->nodeType = 'vmess';
-        $this->nodeId = $request->input('node_id');
-        $this->serverService = new ServerService();
+        $this->nodeId = $this->getNodeId();
+        $this->serverService = $serverService;
         $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
-        if (!$this->nodeInfo) abort(500, 'server is not exist');
+        if (!$this->nodeInfo) throw new \Exception('server is not exist', 500);
+    }
+
+    public function getToken(){
+        return request()->input('token');
+    }
+    public function getNodeType(){
+        return request()->input('node_type');
+    }
+    public function getNodeId(){
+        return request()->input('node_id');
     }
 
     // 后端获取用户
