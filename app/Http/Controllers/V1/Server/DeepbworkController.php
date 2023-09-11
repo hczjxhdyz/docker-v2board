@@ -66,7 +66,6 @@ class DeepbworkController extends Controller
     // 后端提交数据
     public function submit(Request $request)
     {
-//         Log::info('serverSubmitData:' . $request->input('node_id') . ':' . request()->getContent());
         $server = ServerVmess::find($request->input('node_id'));
         if (!$server) {
             return response([
@@ -74,7 +73,7 @@ class DeepbworkController extends Controller
                 'msg' => 'server is not found'
             ]);
         }
-        $data = request()->getContent();
+        $data = $request->getContent();
         $data = json_decode($data, true);
         Cache::put(CacheKey::get('SERVER_VMESS_ONLINE_USER', $server->id), count($data), 3600);
         Cache::put(CacheKey::get('SERVER_VMESS_LAST_PUSH_AT', $server->id), time(), 3600);

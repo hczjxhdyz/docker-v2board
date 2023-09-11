@@ -63,7 +63,6 @@ class TrojanTidalabController extends Controller
     // 后端提交数据
     public function submit(Request $request)
     {
-        // Log::info('serverSubmitData:' . $request->input('node_id') . ':' . request()->getContent());
         $server = ServerTrojan::find($request->input('node_id'));
         if (!$server) {
             return response([
@@ -71,7 +70,7 @@ class TrojanTidalabController extends Controller
                 'msg' => 'server is not found'
             ]);
         }
-        $data = request()->getContent();
+        $data = $request->getContent();
         $data = json_decode($data, true);
         Cache::put(CacheKey::get('SERVER_TROJAN_ONLINE_USER', $server->id), count($data), 3600);
         Cache::put(CacheKey::get('SERVER_TROJAN_LAST_PUSH_AT', $server->id), time(), 3600);

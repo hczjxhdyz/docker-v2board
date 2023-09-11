@@ -18,14 +18,11 @@ class UniProxyController extends Controller
     private $nodeId;
     private $serverService;
 
-    public function __construct(ServerService $serverService)
+    public function __construct(ServerService $serverService, Request $request)
     {
         $this->serverService = $serverService;
-    }
-
-    public function getNodeInfo(){
-        $this->nodeId = request()->input('node_id');
-        $this->nodeType = request()->input('node_type') === 'v2ray' ? 'vmess' : request()->input('node_type');
+        $this->nodeId = $request->input('node_id');
+        $this->nodeType = $request->input('node_type') === 'v2ray' ? 'vmess' : $request->input('node_type');
         $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
         if(!$this->nodeInfo) {
             Log::channel("daily")->info("$this->nodeId  $this->nodeType  $this->nodeInfo");
@@ -36,7 +33,6 @@ class UniProxyController extends Controller
     // 后端获取用户
     public function user(Request $request)
     {
-        $this->getNodeInfo();
         ini_set('memory_limit', -1);
         Cache::put(CacheKey::get('SERVER_' . strtoupper($this->nodeType) . '_LAST_CHECK_AT', $this->nodeInfo->id), time(), 3600);
         $users = $this->serverService->getAvailableUsers($this->nodeInfo->group_id);
@@ -55,8 +51,7 @@ class UniProxyController extends Controller
     // 后端提交数据
     public function push(Request $request)
     {
-        $this->getNodeInfo();
-        $data = request()->getContent();
+        $data = $request->getContent();
         $data = json_decode($data, true);
 
         // 增加单节点多服务器统计在线人数
@@ -109,7 +104,6 @@ class UniProxyController extends Controller
     // 后端获取配置
     public function config(Request $request)
     {
-        $this->getNodeInfo();
         switch ($this->nodeType) {
             case 'shadowsocks':
                 $response = [
