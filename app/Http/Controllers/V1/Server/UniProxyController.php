@@ -9,6 +9,7 @@ use App\Utils\CacheKey;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class UniProxyController extends Controller
 {
@@ -26,7 +27,10 @@ class UniProxyController extends Controller
         $this->nodeId = request()->input('node_id');
         $this->nodeType = request()->input('node_type') === 'v2ray' ? 'vmess' : request()->input('node_type');
         $this->nodeInfo = $this->serverService->getServer($this->nodeId, $this->nodeType);
-        if(!$this->nodeInfo) throw new \Exception('server is not exist', 500);
+        if(!$this->nodeInfo) {
+            Log::channel("daily")->info("$this->nodeId  $this->nodeType  $this->nodeInfo");
+            throw new \Exception('server is not exist', 500);
+        };
     }
 
     // 后端获取用户

@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
 
     protected function convertExceptionToArray(Throwable $e)
     {
-        Log::channel("daily")->info($e);
+        // Log::channel("daily")->info($e);
         return config('app.debug') ? [
             'message' => $e->getMessage(),
             'exception' => get_class($e),
