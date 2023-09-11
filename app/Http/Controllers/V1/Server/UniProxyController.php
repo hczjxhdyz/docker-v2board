@@ -42,8 +42,8 @@ class UniProxyController extends Controller
 
         $eTag = sha1(json_encode($response));
         if (strpos($request->header('If-None-Match'), $eTag) !== false ) {
-            abort(304);
-        }
+            return response(null, 304);
+        };
 
         return response($response)->header('ETag', "\"{$eTag}\"");
     }
@@ -167,7 +167,7 @@ class UniProxyController extends Controller
         }
         $eTag = sha1(json_encode($response));
         if (strpos($request->header('If-None-Match'), $eTag) !== false ) {
-            abort(304);
+            return response(null,304);
         }
 
         return response($response)->header('ETag', "\"{$eTag}\"");

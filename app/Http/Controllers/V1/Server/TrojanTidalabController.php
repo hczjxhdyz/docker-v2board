@@ -52,7 +52,7 @@ class TrojanTidalabController extends Controller
         }
         $eTag = sha1(json_encode($result));
         if (strpos($request->header('If-None-Match'), $eTag) !== false ) {
-            abort(304);
+            return response(null,304);
         }
         return response([
             'msg' => 'ok',
