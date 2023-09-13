@@ -2,6 +2,7 @@
 
 namespace App\Protocols;
 
+use App\Models\ServerHysteria;
 use App\Utils\Helper;
 
 class Shadowrocket
@@ -238,7 +239,8 @@ class Shadowrocket
             "obfsParam"  => $server['server_key'],
             "protocol" => 'udp',
             "peer" => $server['server_name'],
-            "fastopen" => 1
+            "fastopen" => 1,
+            "alpn" => ServerHysteria::$alpnMap[$server['alpn']]
         ];
         if($server['insecure']) $params['insecure'] = $server['insecure'];
         $query = http_build_query($params);

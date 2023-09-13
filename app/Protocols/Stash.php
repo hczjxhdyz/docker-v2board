@@ -2,6 +2,7 @@
 
 namespace App\Protocols;
 
+use App\Models\ServerHysteria;
 use Symfony\Component\Yaml\Yaml;
 
 class Stash
@@ -263,6 +264,7 @@ class Stash
         $array['obfs'] = $server['server_key'];
         $array['sni'] = $server['server_name']??'';
         $array['skip-cert-verify'] = $server['insecure'];
+        $array['alpn'] = ServerHysteria::$alpnMap[$server['alpn']];
         return $array;
     }
 

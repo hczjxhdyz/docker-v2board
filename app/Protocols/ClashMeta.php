@@ -2,6 +2,7 @@
 
 namespace App\Protocols;
 
+use App\Models\ServerHysteria;
 use App\Utils\Helper;
 use Symfony\Component\Yaml\Yaml;
 
@@ -275,6 +276,7 @@ class ClashMeta
         $array['skip-cert-verify'] = $server['insecure'] ? true : false;
         $array['fast-open'] = true;
         $array['disable_mtu_discovery'] = true; //禁止路径最大传输单元发现
+        $array['alpn'] = [ServerHysteria::$alpnMap[$server['alpn']]];
         return $array;
     }
 

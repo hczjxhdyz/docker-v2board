@@ -134,13 +134,15 @@ class ServerService
 
     public function getAvailableServers(User $user)
     {
-        $servers = array_merge(
-            $this->getAvailableShadowsocks($user),
-            $this->getAvailableVmess($user),
-            $this->getAvailableTrojan($user),
-            $this->getAvailableHysteria($user),
-            $this->getAvailableVless($user)
-        );
+        $servers = Cache::remember('serversAvailable_'. $user->id, 5, function() use($user){
+            return array_merge(
+                $this->getAvailableShadowsocks($user),
+                $this->getAvailableVmess($user),
+                $this->getAvailableTrojan($user),
+                $this->getAvailableHysteria($user),
+                $this->getAvailableVless($user)
+            );
+        });
         $tmp = array_column($servers, 'sort');
         array_multisort($tmp, SORT_ASC, $servers);
         return array_map(function ($server) {
